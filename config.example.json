@@ -1,0 +1,1 @@
+{"_comment":"redteam_families: null = all families; or a list like [\"direct-injection\", \"jailbreak\"] for a fast daily check","redteam_families":null,"threshold":0.05,"trend_epsilon":0.005,"trend_window":3}
