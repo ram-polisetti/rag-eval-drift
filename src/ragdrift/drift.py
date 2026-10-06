@@ -6,8 +6,9 @@ Two rules, both deliberately simple and documented in docs/DRIFT_DETECTION.md:
    below its baseline value → drift. Upward moves of the same size are
    reported as improvements, never alerts.
 
-2. TREND — the last ``trend_window`` (default 3) runs each declined by at
-   least ``trend_epsilon`` (default 0.005) versus the previous run →
+2. TREND — the last ``trend_window`` (default 3) observations contain
+   ``trend_window - 1`` declines of at least ``trend_epsilon`` (default
+   0.005) between adjacent observations →
    drift, even when the total drop is still under the threshold.
 
 Noise handling: changes smaller than ``trend_epsilon`` are ignored
@@ -71,7 +72,7 @@ def detect(baseline_run, current_run, history_runs=None,
                 "delta": round(delta, 4), "direction": "up",
                 "evidence": _evidence(baseline_run, current_run, metric),
             })
-    # Trend rule: N consecutive declines >= epsilon, even under threshold.
+    # Trend rule: N observations containing N-1 consecutive declines.
     hist = list(history_runs or [])
     seq = hist + [current_run]
     if len(seq) >= trend_window:
@@ -92,7 +93,7 @@ def detect(baseline_run, current_run, history_runs=None,
                         "direction": "down",
                         "evidence": {
                             "window": [round(v, 4) for v in vals],
-                            "note": f"{trend_window} consecutive declines",
+                            "note": f"{len(diffs)} consecutive declines across {trend_window} observations",
                         },
                     })
     return findings
