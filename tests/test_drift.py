@@ -26,6 +26,16 @@ def _run(metrics, run_id="r1", regressed=()):
 
 
 class DriftRulesTest(unittest.TestCase):
+    def test_trend_note_counts_differences_not_observations(self):
+        base = _run({"rate": 1.0})
+        cur = _run({"rate": 0.98})
+        history = [_run({"rate": 1.0}), _run({"rate": 0.99})]
+        findings = detect(base, cur, history_runs=history, threshold=0.5)
+        trend = [f for f in findings if f["rule"] == "trend"]
+        self.assertEqual(len(trend), 1)
+        self.assertEqual(trend[0]["evidence"]["note"],
+                         "2 consecutive declines across 3 observations")
+
     def test_genuine_regression_flagged(self):
         base = _run({"eval.overall_pass_rate": 1.0})
         cur = _run({"eval.overall_pass_rate": 0.919},
