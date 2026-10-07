@@ -13,7 +13,7 @@ put secret webhook URLs in a config file or commit. Successful responses
 write payload/destination-hash receipts. Failed sends remain retryable;
 alerts are retained. The receiver should honor Idempotency-Key because a
 network failure can leave delivery uncertain. This is not exactly-once
-transport. The store is single-writer and needs persistent backup.
+transport. Delivery uses a nonblocking local POSIX file lock. An overlapping delivery fails before sending; all delivery callers must use this command. This is not a distributed lock: use a local filesystem, not shared/network storage. The broader run/state store is still single-writer and needs persistent backup. Invalid receipt state fails closed; malformed alert files are reported while later valid files can proceed. An acknowledged send whose receipt cannot be saved is reported as uncertain, not successful.
 
 Local tests cover failed retries and success dedup with injected senders,
 not an external service. No production destination has been configured.
