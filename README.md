@@ -8,7 +8,7 @@ Built by an operator, for operators.
 
 - **Eval-suite adapters** run the *real* sibling tools — `rag-governance-demo`'s eval harness (groundedness, citations, refusals, red-team cases) and `rag-redteam`'s attack battery (attack-pass rate) — never reimplementations. Sibling SHAs are recorded in every run.
 - **Scheduler-friendly CLI**: `ragdrift run` does one full cycle (eval → drift detect → alert → audit). Run it from cron daily/weekly.
-- **Drift detection**: threshold rule (metric falls ≥ 5 points vs pinned baseline) + trend rule (3 consecutive declines), with a noise floor. See `docs/DRIFT_DETECTION.md`.
+- **Drift detection**: threshold rule (metric falls ≥ 5 points vs pinned baseline) + trend rule (2 consecutive declines across 3 observations by default), with a noise floor. See `docs/DRIFT_DETECTION.md`.
 - **Alerting**: one JSON alert per drift finding in `outbox/`, deduplicated (no double-paging). Webhook/SMTP are documented stubs.
 - **Audit**: every run, baseline pin, and alert appended to a hash-chained JSONL log with tamper detection.
 - **Status UI**: `ragdrift status` (latest vs baseline), `ragdrift report` (trends).

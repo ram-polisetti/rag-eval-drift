@@ -12,7 +12,7 @@ Upward moves of the same size are reported as `improvement` findings — visible
 
 ## Rule 2 — Trend
 
-The last `trend_window` (default 3) runs each declined by at least `trend_epsilon` (default 0.005) versus the previous run → drift, even if the total drop is still under the threshold. Catches slow rot that never trips a single big threshold.
+The last `trend_window` (default 3) observations contain `trend_window - 1` adjacent declines (2 by default), each of at least `trend_epsilon` (default 0.005) → drift, even if the total drop is still under the threshold. Catches slow rot that never trips a single big threshold.
 
 A single uptick breaks the streak (no alert on a bounce). If the threshold rule already fired for a metric, the trend rule does not double-report it.
 
