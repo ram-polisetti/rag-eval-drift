@@ -203,13 +203,17 @@ def cmd_outbox(args):
 
 
 def cmd_deliver(args):
-    from ragdrift.delivery import deliver_outbox
+    from ragdrift.delivery import DeliveryError, deliver_outbox
     import os
     url = os.environ.get('RAGDRIFT_WEBHOOK_URL')
     if not url:
         print('ERROR: RAGDRIFT_WEBHOOK_URL is required; nothing sent', file=sys.stderr)
         return 2
-    result = deliver_outbox(args.store, url)
+    try:
+        result = deliver_outbox(args.store, url)
+    except DeliveryError as exc:
+        print(f'ERROR: {exc}', file=sys.stderr)
+        return 2
     print(json.dumps(result, sort_keys=True))
     return 2 if result['failed'] else 0
 
