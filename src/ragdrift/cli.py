@@ -202,6 +202,22 @@ def cmd_outbox(args):
     return 0
 
 
+def cmd_deliver(args):
+    from ragdrift.delivery import DeliveryError, deliver_outbox
+    import os
+    url = os.environ.get('RAGDRIFT_WEBHOOK_URL')
+    if not url:
+        print('ERROR: RAGDRIFT_WEBHOOK_URL is required; nothing sent', file=sys.stderr)
+        return 2
+    try:
+        result = deliver_outbox(args.store, url)
+    except DeliveryError as exc:
+        print(f'ERROR: {exc}', file=sys.stderr)
+        return 2
+    print(json.dumps(result, sort_keys=True))
+    return 2 if result['failed'] else 0
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(prog="ragdrift",
                                  description="RAG eval-drift harness")
@@ -239,6 +255,10 @@ def main(argv=None):
     p = sub.add_parser("outbox", help="list alerts written")
     p.add_argument("--store", required=True)
     p.set_defaults(fn=cmd_outbox)
+
+    p = sub.add_parser("deliver", help="explicitly deliver pending alerts to the configured webhook")
+    p.add_argument("--store", required=True)
+    p.set_defaults(fn=cmd_deliver)
 
     args = ap.parse_args(argv)
     return args.fn(args)

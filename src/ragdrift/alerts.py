@@ -1,4 +1,4 @@
-"""Alerting: local outbox + dedup. Webhook/SMTP are documented stubs."""
+"""Alerting: local outbox + dedup. Webhook delivery is opt-in; SMTP remains a stub."""
 
 import json
 import time
@@ -81,15 +81,7 @@ class Alerter:
         return sorted(p.name for p in self.dir.glob("*.json"))
 
 
-def send_webhook(url, alert):
-    """Stub: POST the alert JSON to a webhook URL.
-
-    Not wired to run automatically — set RAGDRIFT_WEBHOOK_URL and call from
-    your own scheduler. Documented here so the integration point is explicit.
-    """
-    raise NotImplementedError(
-        "webhook delivery is a stub: POST alert JSON to the given URL "
-        "from your scheduler (see docs/LIMITATIONS.md)")
+from .delivery import send_webhook  # explicit opt-in; no automatic sends
 
 
 def send_smtp(host, alert, **kwargs):
